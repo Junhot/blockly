@@ -104,6 +104,13 @@ Blockly.BlockSvg = function(workspace, prototypeName, opt_id) {
   if (this.svgGroup_.dataset) {
     this.svgGroup_.dataset.id = this.id;
   }
+  
+  // 放在Block构造之后
+  var pattern = this.getFillPattern();
+  if (pattern) {
+    this.svgPathFill_ = Blockly.utils.createSvgElement('path', {'class': 'blocklyPath'},
+      this.svgGroup_);
+  }
 };
 goog.inherits(Blockly.BlockSvg, Blockly.Block);
 
@@ -880,6 +887,7 @@ Blockly.BlockSvg.prototype.dispose = function(healStack, animate) {
   // Sever JavaScript to DOM connections.
   this.svgGroup_ = null;
   this.svgPath_ = null;
+  this.svgPathFill_ = null;
   this.svgPathLight_ = null;
   this.svgPathDark_ = null;
   Blockly.Field.stopCache();
@@ -893,7 +901,7 @@ Blockly.BlockSvg.prototype.updateColour = function() {
     // Disabled blocks don't have colour.
     return;
   }
-  var hexColour = this.getColour();
+  var hexColour = this.getHexColour();
   var rgb = goog.color.hexToRgb(hexColour);
   if (this.isShadow()) {
     rgb = goog.color.lighten(rgb, 0.6);
@@ -908,6 +916,10 @@ Blockly.BlockSvg.prototype.updateColour = function() {
     this.svgPathDark_.setAttribute('fill', hexDark);
   }
   this.svgPath_.setAttribute('fill', hexColour);
+  var pattern = this.getFillPattern();
+  if (pattern) {
+    this.svgPathFill_.setAttribute('fill', 'url(#' + pattern + ')');
+  }
 
   var icons = this.getIcons();
   for (var i = 0; i < icons.length; i++) {

@@ -599,6 +599,9 @@ Blockly.BlockSvg.prototype.setPaths_ = function(pathObject) {
   var pathString = pathObject.steps.join(' ') + '\n' +
       pathObject.inlineSteps.join(' ');
   this.svgPath_.setAttribute('d', pathString);
+  if (this.svgPathFill_) {
+    this.svgPathFill_.setAttribute('d', pathString);
+  }
   this.svgPathDark_.setAttribute('d', pathString);
 
   pathString = pathObject.highlightSteps.join(' ') + '\n' +

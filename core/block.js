@@ -152,6 +152,10 @@ Blockly.Block = function(workspace, prototypeName, opt_id) {
    */
   this.isInsertionMarker_ = false;
 
+  this.colourSaturation_ = 0.45;
+  this.colourValue_ = 0.65;
+  this.fillPattern_ = null;
+
   // Copy the type-specific functions and data from the prototype.
   if (prototypeName) {
     /** @type {string} */
@@ -805,6 +809,30 @@ Blockly.Block.prototype.setTooltip = function(newTip) {
  */
 Blockly.Block.prototype.getColour = function() {
   return this.colour_;
+};
+
+/**
+ * Get the current colour of this block
+ * @returns {string} hexadecimal colour value
+ */
+Blockly.Block.prototype.getHexColour = function() {
+  return goog.color.hsvToHex(this.getHue(), this.getSaturation(), this.getValue() * 256);
+};
+
+/**
+ * Get the saturation of a block.
+ * @return {number} HSV saturation.
+ */
+Blockly.Block.prototype.getSaturation = function() {
+  return this.colourSaturation_;
+};
+
+/**
+ * Get the value of a block.
+ * @return {number} HSV value.
+ */
+Blockly.Block.prototype.getValue = function() {
+  return this.colourValue_;
 };
 
 /**
@@ -1734,4 +1762,49 @@ Blockly.Block.prototype.toDevString = function() {
     msg += ' (id="' + this.id + '")';
   }
   return msg;
+};
+
+
+/**
+ * Get the fill pattern for the block
+ * @return {string} Pattern name xlink
+ */
+Blockly.Block.prototype.getFillPattern = function() {
+  return this.fillPattern_;
+};
+
+/**
+ * Change the fill pattern of a block
+ * @param {string} pattern The id of the pattern
+ */
+Blockly.Block.prototype.setFillPattern = function(pattern) {
+  this.fillPattern_ = pattern;
+};
+
+
+/**
+ * Change the HSV of a block.
+ * @param {number} colourHue HSV hue value.
+ * @param {number} colourSaturation HSV saturation value.
+ * @param {number} colourValue HSV value.
+ */
+Blockly.Block.prototype.setHSV = function(
+  colourHue, colourSaturation, colourValue) {
+this.hue_ = colourHue;
+this.colourSaturation_ = colourSaturation;
+this.colourValue_ = colourValue;
+this.updateColour();
+var icons = this.getIcons();
+for (var x = 0; x < icons.length; x++) {
+  icons[x].updateColour();
+}
+if (this.rendered) {
+  // Bump every dropdown to change its colour.
+  for (var x = 0, input; input = this.inputList[x]; x++) {
+    for (var y = 0, title; title = input.titleRow[y]; y++) {
+      title.setText(null);
+    }
+  }
+  this.render();
+}
 };

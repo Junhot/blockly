@@ -117,7 +117,9 @@ Blockly.createDom_ = function(container, options) {
     ... filters go here ...
   </defs>
   */
-  var defs = Blockly.utils.createSvgElement('defs', {}, svg);
+  var defs = Blockly.utils.createSvgElement('defs', {
+    'id': 'blocklySvgDefs'
+  }, svg);
   // Each filter/pattern needs a unique ID for the case of multiple Blockly
   // instances on a page.  Browser behaviour becomes undefined otherwise.
   // https://neil.fraser.name/news/2015/11/01/
